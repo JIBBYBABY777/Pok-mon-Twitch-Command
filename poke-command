@@ -1,0 +1,31 @@
+!commands add !pokemon -cd=30 $(eval
+  const user = "$(user)";
+  const arg  = "$(1)".toLowerCase(); // optional: gen1..gen9
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  const load = u => `$(urlfetch ${u})`.split("\n").map(s=>s.trim()).filter(Boolean);
+
+  const gens = {
+    gen1: {
+      c: load("https://github.com/JIBBYBABY777/Pok-mon-Twitch-Command/blob/f7a71635c963120e96b668908ebed2e6472676b7/gen1.txt"),
+      l: load("https://github.com/JIBBYBABY777/Pok-mon-Twitch-Command/blob/f7a71635c963120e96b668908ebed2e6472676b7/gen1_legendary.txt")
+    },
+    gen2: {
+      c: load("https://raw.githubusercontent.com/USER/REPO/BRANCH/gen2_common.txt"),
+      l: load("https://raw.githubusercontent.com/USER/REPO/BRANCH/gen2_legendary.txt")
+    }
+    // Add gen3..gen9 in the same pattern
+  };
+
+  const keys = Object.keys(gens);
+  const key  = gens[arg] ? arg : pick(keys);
+
+  const pLegendary = 0.05; // 5% legendary odds — tweak if you like
+  const hasLegends = gens[key].l && gens[key].l.length;
+  const legendary  = Math.random() < pLegendary && hasLegends;
+
+  const pool = legendary ? gens[key].l : gens[key].c;
+  const mon  = pool.length ? pick(pool) : "MissingList";
+  const tag  = legendary ? "✨ Legendary " : "";
+
+  `🎉 ${user} caught a ${tag}wild ${mon}! 🔴⚪ (${key.toUpperCase()})`;
+)
