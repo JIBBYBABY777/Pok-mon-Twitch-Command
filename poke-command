@@ -4,28 +4,42 @@
   const pick = a => a[Math.floor(Math.random()*a.length)];
   const load = u => `$(urlfetch ${u})`.split("\n").map(s=>s.trim()).filter(Boolean);
 
-  const gens = {
-    gen1: {
-      c: load("https://github.com/JIBBYBABY777/Pok-mon-Twitch-Command/blob/f7a71635c963120e96b668908ebed2e6472676b7/gen1.txt"),
-      l: load("https://github.com/JIBBYBABY777/Pok-mon-Twitch-Command/blob/f7a71635c963120e96b668908ebed2e6472676b7/gen1_legendary.txt")
-    },
-    gen2: {
-      c: load("https://raw.githubusercontent.com/USER/REPO/BRANCH/gen2_common.txt"),
-      l: load("https://raw.githubusercontent.com/USER/REPO/BRANCH/gen2_legendary.txt")
-    }
-    // Add gen3..gen9 in the same pattern
+  // 🔗 Replace these with your RAW GitHub links (public):
+  const G = {
+    gen1: { c: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen1.txt?token=GHSAT0AAAAAADKGSJ7ZZKCRJAZEGGLWIBLM2FTE2RQ"), l: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen1_legendary.txt?token=GHSAT0AAAAAADKGSJ7ZEGBHSKMQ3OAGA37M2FTE4UQ") },
+    gen2: { c: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen2.txt?token=GHSAT0AAAAAADKGSJ7ZN7QY3FPZ5ZBZTFIM2FTE26Q"), l: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen2_legendary.txt?token=GHSAT0AAAAAADKGSJ7YGIMI67HGK3BV42SW2FTE43A") },
+    gen3: { c: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen3.txt?token=GHSAT0AAAAAADKGSJ7ZJXAGGG4G7TSYINPE2FTE3FA"), l: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen3_legendary.txt?token=GHSAT0AAAAAADKGSJ7ZJJFGA4OL4BZW3BMU2FTE5BA") },
+    gen4: { c: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen4.txt?token=GHSAT0AAAAAADKGSJ7ZHOAYY4UDEAECC6EC2FTE3NA"), l: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen4_legendary.txt?token=GHSAT0AAAAAADKGSJ7ZP7ZAFBQFOEOE3RTY2FTE5LA") },
+    gen5: { c: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen5.txt?token=GHSAT0AAAAAADKGSJ7Z3AMHGPOFKUOLH7NU2FTE3TQ"), l: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen5_legendary.txt?token=GHSAT0AAAAAADKGSJ7ZIMIDQNYLZSKWX5CA2FTE5QQ") },
+    gen6: { c: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen6.txt?token=GHSAT0AAAAAADKGSJ7ZIW4DH72VSE2UUYJM2FTE34Q"), l: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen6_legendary.txt?token=GHSAT0AAAAAADKGSJ7Y6AVIPYFFEQK3TCMO2FTE5XA") },
+    gen7: { c: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen7.txt?token=GHSAT0AAAAAADKGSJ7YIRXMGTBPR7RU3RJK2FTE4CQ"), l: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen7_legendary.txt?token=GHSAT0AAAAAADKGSJ7ZAHTFBDEPRYDITBNK2FTE54A") },
+    gen8: { c: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen8.txt?token=GHSAT0AAAAAADKGSJ7ZQCHM4FR52J67YXP62FTE4IA"), l: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen8_legendary.txt?token=GHSAT0AAAAAADKGSJ7YAPGQU2O2KPVLDGJW2FTE6CQ") },
+    gen9: { c: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen9.txt?token=GHSAT0AAAAAADKGSJ7ZQIR4RYFF24PNH5HI2FTE4OA"), l: load("https://raw.githubusercontent.com/JIBBYBABY777/Pok-mon-Twitch-Command/refs/heads/main/gen9_legendary.txt?token=GHSAT0AAAAAADKGSJ7Y5OLPV4DRBJWALVEO2FTE6IQ") }
   };
 
-  const keys = Object.keys(gens);
-  const key  = gens[arg] ? arg : pick(keys);
+  // Global mythicals (one name per line)
+  const myth = load("https://raw.githubusercontent.com/USER/REPO/BRANCH/mythicals.txt");
 
-  const pLegendary = 0.05; // 5% legendary odds — tweak if you like
-  const hasLegends = gens[key].l && gens[key].l.length;
+  const keys = Object.keys(G);
+  const key  = G[arg] ? arg : pick(keys);
+
+  // 🎯 Odds
+  const pLegendary = 0.05;  // 5% chance to be legendary
+  const pMythical  = 0.20;  // 20% of legendary rolls become mythicals
+
+  const hasLegends = G[key].l && G[key].l.length>0;
   const legendary  = Math.random() < pLegendary && hasLegends;
 
-  const pool = legendary ? gens[key].l : gens[key].c;
-  const mon  = pool.length ? pick(pool) : "MissingList";
-  const tag  = legendary ? "✨ Legendary " : "";
+  let pool = G[key].c;
+  let tag  = "";
+
+  if (legendary) {
+    const useMyth = myth && myth.length>0 && Math.random() < pMythical;
+    pool = useMyth ? myth : G[key].l;
+    tag  = useMyth ? "✨ Mythical " : "✨ Legendary ";
+  }
+
+  const mon = pool && pool.length ? pick(pool) : "MissingList";
 
   `🎉 ${user} caught a ${tag}wild ${mon}! 🔴⚪ (${key.toUpperCase()})`;
 )
